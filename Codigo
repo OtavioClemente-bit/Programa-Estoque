@@ -1,0 +1,114 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_PRODUTOS 100
+
+typedef struct {
+    char nome[50];
+    int quantidade;
+} Produto;
+
+Produto estoque[MAX_PRODUTOS];
+int num_produtos = 0;
+
+// Funções do programa
+void adicionarProduto();
+void removerProduto();
+void consultarEstoque();
+void exibirMenu();
+
+int main() {
+    int opcao;
+
+    do {
+        exibirMenu();
+        printf("Escolha uma opção: ");
+        scanf("%d", &opcao);
+
+        switch(opcao) {
+            case 1:
+                adicionarProduto();
+                break;
+            case 2:
+                removerProduto();
+                break;
+            case 3:
+                consultarEstoque();
+                break;
+            case 0:
+                printf("Saindo do sistema...\n");
+                break;
+            default:
+                printf("Opção inválida! Tente novamente.\n");
+        }
+    } while(opcao != 0);
+
+    return 0;
+}
+
+void exibirMenu() {
+    printf("\n=== Sistema de Controle de Estoque ===\n");
+    printf("1. Adicionar Produto\n");
+    printf("2. Remover Produto\n");
+    printf("3. Consultar Estoque\n");
+    printf("0. Sair\n");
+}
+
+void adicionarProduto() {
+    if (num_produtos < MAX_PRODUTOS) {
+        char nome[50];
+        int quantidade;
+
+        printf("Digite o nome do produto: ");
+        scanf(" %[^\n]", nome);
+        printf("Digite a quantidade: ");
+        scanf("%d", &quantidade);
+
+        strcpy(estoque[num_produtos].nome, nome);
+        estoque[num_produtos].quantidade = quantidade;
+        num_produtos++;
+
+        printf("Produto adicionado com sucesso!\n");
+    } else {
+        printf("Estoque cheio! Não é possível adicionar mais produtos.\n");
+    }
+}
+
+void removerProduto() {
+    char nome[50];
+    printf("Digite o nome do produto a ser removido: ");
+    scanf(" %[^\n]", nome);
+
+    for (int i = 0; i < num_produtos; i++) {
+        if (strcmp(estoque[i].nome, nome) == 0) {
+            printf("Quantidade atual: %d\n", estoque[i].quantidade);
+            printf("Digite a quantidade a ser removida: ");
+            int quantidade;
+            scanf("%d", &quantidade);
+
+            if (quantidade <= estoque[i].quantidade) {
+                estoque[i].quantidade -= quantidade;
+                printf("Produto removido com sucesso!\n");
+                if (estoque[i].quantidade == 0) {
+                    // Remove o produto do estoque
+                    for (int j = i; j < num_produtos - 1; j++) {
+                        estoque[j] = estoque[j + 1];
+                    }
+                    num_produtos--;
+                }
+            } else {
+                printf("Quantidade a remover é maior que a disponível!\n");
+            }
+            return;
+        }
+    }
+    printf("Produto não encontrado no estoque!\n");
+}
+
+void consultarEstoque() {
+    printf("\n=== Estoque Atual ===\n");
+    for (int i = 0; i < num_produtos; i++) {
+        printf("Produto: %s | Quantidade: %d\n", estoque[i].nome, estoque[i].quantidade);
+    }
+}
